@@ -1,4 +1,12 @@
 @extends('layouts.helloapp')
+<style>
+    .pagination { font-size:10pt; }
+    .pagination li { display:inline-block}
+    tr th a:link {color: white; }
+    tr th a:visited {color: white; }
+    tr th a:hover {color:white; }
+    tr th a:active {color:ehite;}
+</style>
 
 @section('title', 'Index')
 
@@ -8,28 +16,26 @@
 @endsection
 
 @section('content')
-    <p>{{$msg}}</p>
-    @if (count($errors) > 0)
-    <p>入力に問題があります。再入力してください。</p>
-    @endif
+@if (Auth::check())
+<p>USER: {{$user->name . '(' . $user->email . ')'}}</p>
+@else
+<p>※ログインしていません。(<a href="/login">ログイン | <a href="/register">登録</a>)</p>
+@endif
     <table>
-    <form action="/hello" method="post">
-        {{ csrf_field() }}
-        @if ($errors->has('name'))
-        <tr><th>ERROR</th><td>{{$errors->first('name')}}</td></tr>
-        @endif
-        <tr><th>name: </th><td><input type="text" name="name" value="{{old('name')}}"></td></tr>
-        @if ($errors->has('mail'))
-        <tr><th>ERROR</th><td>{{$errors->first('mail')}}</td></tr>
-        @endif
-        <tr><th>mail: </th><td><input type="text" name="mail" value="{{old('mail')}}"></td></tr>
-        @if ($errors->has('age'))
-        <tr><th>ERROR</th><td>{{$errors->first('age')}}</td></tr>
-        @endif
-        <tr><th>age: </th><td><input type="text" name="age" value="{{old('age')}}"></td></tr>
-        <tr><th></th><td><input type="submit" value="send"></td></tr>        
-    </form>
+    <tr>
+        <th><a href="/hello?sort=name">name</a></th>
+        <th><a href="/hello?sort=mail">mail</a></th>
+        <th><a href="/hello?sort=age">age</a></th>
+    </tr>
+    @foreach ($items as $item)
+        <tr>
+            <td>{{$item->name}}</td>
+            <td>{{$item->mail}}</td>
+            <td>{{$item->age}}</td>
+        </tr>
+    @endforeach
     </table>
+    {{ $items->appends(['sort' => $sort])->links() }}
 @endsection
 
 @section('footer')
